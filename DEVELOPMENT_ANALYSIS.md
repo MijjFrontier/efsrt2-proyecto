@@ -16,11 +16,11 @@ El frontend de RestoFlow se ha desarrollado siguiendo las mejores prácticas y t
 
 ### Prioridades del Frontend
 
--   **Interfaz intuitiva:** La interfaz está diseñada por roles (Administrador, Cajero, Camarero), mostrando solo las opciones relevantes para cada uno. Se utilizan componentes de la librería **ShadCN/UI** (como `Card`, `Dialog`, `Button`), que son visualmente claros y consistentes, facilitando la navegación y el uso sin necesidad de una larga capacitación.
+-   **Interfaz intuitiva:** La interfaz está diseñada por roles (Administrador, Cajero, Camarero, Cocina), mostrando solo las opciones relevantes para cada uno. Se utilizan componentes de la librería **ShadCN/UI** (como `Card`, `Dialog`, `Button`), que son visualmente claros y consistentes, facilitando la navegación y el uso sin necesidad de una larga capacitación.
 
--   **Respuesta en tiempo real:** La integración con **Firebase Firestore** es clave. Cuando un camarero actualiza un pedido (`updateOrder` en `src/lib/actions.ts`), los datos se guardan en Firestore. Gracias a las funciones de Next.js como `revalidatePath`, las demás vistas de la aplicación (como la del cajero) reflejan estos cambios casi instantáneamente, mostrando el estado actualizado de las mesas sin necesidad de recargar la página manualmente.
+-   **Respuesta en tiempo real:** La integración con **Firebase Firestore** es clave. Cuando un camarero actualiza un pedido, los datos se guardan en Firestore. Gracias a la sincronización en tiempo real de Firestore y las revalidaciones de Next.js, las demás vistas de la aplicación (como la de cocina o la del cajero) reflejan estos cambios casi instantáneamente, mostrando el estado actualizado de las mesas sin necesidad de recargar la página manualmente.
 
--   **Visualización clara del estado de mesas y comandas:** El componente `src/components/TableCard.tsx` es un ejemplo central de esto. Utiliza `Badges` (etiquetas) de colores para mostrar claramente el estado de una mesa ("Libre", "Ocupada"). Además, muestra un resumen del pedido ("3 artículos en el pedido"), dando una visión rápida y eficaz de la situación actual del restaurante.
+-   **Visualización clara del estado de mesas y comandas:** El componente `src/components/TableCard.tsx` es un ejemplo central de esto. Utiliza `Badges` (etiquetas) de colores para mostrar claramente el estado de una mesa ("Libre", "Ocupada", "Listo"). Además, muestra un resumen del pedido, dando una visión rápida y eficaz de la situación actual del restaurante.
 
 -   **Diseño adaptable a distintos dispositivos:** Se ha implementado un enfoque "mobile-first" con Tailwind CSS. Las rejillas (`grid`) y los puntos de quiebre (`sm:`, `md:`, `lg:`) se utilizan en toda la aplicación para asegurar que la interfaz se vea y funcione correctamente en una amplia gama de dispositivos, desde teléfonos móviles y tabletas (para camareros) hasta computadoras de escritorio (para cajeros y administradores).
 
@@ -28,21 +28,15 @@ El frontend de RestoFlow se ha desarrollado siguiendo las mejores prácticas y t
 
 ## Desarrollo del Backend
 
-RestoFlow implementa un backend moderno de tipo **serverless**, utilizando las capacidades de **Next.js (que se ejecuta en un entorno Node.js en Vercel)** y los servicios de **Firebase (Firestore y Authentication)**. Este enfoque reemplaza la necesidad de un servidor API REST tradicional y monolítico.
+El "backend" o la lógica del servidor de RestoFlow no es un programa tradicional que se ejecuta en un servidor constantemente. En su lugar, utilizamos una arquitectura moderna y eficiente llamada **serverless** (sin servidor), apoyada en dos tecnologías clave: **Next.js** y **Firebase**.
 
--   **Procesamiento y validación de pedidos:** La lógica de negocio reside en los **Server Actions** de Next.js, ubicados en `src/lib/actions.ts`. Funciones como `updateOrder` y `processPayment` se ejecutan de forma segura en el servidor. Reciben los datos del frontend, los validan (por ejemplo, verificando que la mesa exista o que el pedido no esté vacío) y luego los procesan para guardarlos en la base de datos de Firestore.
+-   **Lógica de Negocio con Server Actions:** Toda la lógica de negocio (crear pedidos, procesar pagos, gestionar empleados) reside en un único lugar: el archivo `src/lib/actions.ts`. Estas son las llamadas **"Server Actions"** de Next.js. La gran ventaja es que desde el frontend (por ejemplo, al hacer clic en un botón), podemos llamar a estas funciones como si fueran locales, pero se ejecutan de forma segura y automática en el servidor. Esto elimina la necesidad de construir y mantener una API REST tradicional, haciendo el código más limpio, rápido y seguro.
 
--   **Gestión de estados de mesas:** Las mismas Server Actions gestionan el estado de las mesas. Por ejemplo, cuando se añade un primer artículo a una mesa, la función `updateOrder` cambia el estado de la mesa de `"free"` a `"occupied"` en Firestore. Cuando se procesa un pago con `finalizePayment`, el estado se revierte a `"free"`.
+-   **Gestión de Datos con Firebase Firestore:** Firestore es nuestra base de datos NoSQL en la nube. Aquí se guarda toda la información de forma persistente: los empleados, el menú, el estado de cada mesa, los pedidos y las transacciones. Su principal ventaja es la **sincronización en tiempo real**, que permite que los cambios (como un nuevo pedido) se reflejen instantáneamente en todas las pantallas conectadas (cocina, caja, etc.).
 
--   **Administración de usuarios y roles:** La gestión de empleados (que actúan como usuarios) se realiza a través de funciones como `upsertEmployee` y `deleteEmployee` en `src/lib/actions.ts`. Estas funciones permiten crear, editar y eliminar empleados, asignándoles roles ("waiter", "cashier") que se almacenan en la colección `employees` de Firestore.
+-   **Seguridad con Firebase Security Rules:** Las Reglas de Seguridad de Firestore actúan como un vigilante o un "firewall" directamente sobre la base de datos. Nos permiten definir con extrema granularidad quién puede leer, escribir o modificar cada pieza de información, proporcionando una capa de seguridad robusta que no depende del código de la aplicación.
 
--   **Generación de reportes operativos:** Los reportes de ventas se generan en `src/app/admin/reports/page.tsx`. Esta página llama a la Server Action `getTransactions` para obtener todos los datos de las transacciones desde Firestore. Luego, los procesa para calcular métricas clave (ventas totales, ticket promedio) y visualizarlas en gráficos y tablas, como se ve en el componente `SalesReport.tsx`.
-
--   **Control de seguridad y autenticación:**
-    -   **Autenticación:** La lógica de inicio de sesión en `src/components/LoginForm.tsx` simula una autenticación por PIN, verificando el PIN ingresado contra el que está almacenado de forma segura en la colección `employees` de Firestore (obtenido a través de una Server Action).
-    -   **Seguridad:** El control de acceso a los datos se delega a las **Reglas de Seguridad de Firestore**. Estas reglas, configuradas en la consola de Firebase, actúan como un firewall a nivel de base de datos, definiendo con precisión qué usuarios pueden leer, escribir o modificar cada documento. Esto proporciona una capa de seguridad robusta y escalable.
-
--   **Exposición de servicios (Server Actions en lugar de API REST):** En lugar de una API REST tradicional, el proyecto utiliza **Next.js Server Actions**. Los componentes del frontend importan y llaman a estas funciones asíncronas (`updateOrder`, `getTables`, etc.) como si fueran funciones locales. Next.js se encarga de la comunicación segura entre el cliente y el servidor, eliminando la necesidad de gestionar endpoints, `fetch`, y la serialización de datos manualmente, lo que resulta en un código más limpio, seguro y con mejor rendimiento.
+-   **Exposición de Servicios (Server Actions en lugar de API REST):** Como se mencionó, el proyecto no necesita una API REST. Los componentes del frontend importan y llaman a las Server Actions (`updateOrder`, `getTables`, etc.) directamente. Next.js se encarga de la comunicación segura entre el cliente y el servidor, simplificando enormemente el desarrollo.
 
 ---
 
@@ -69,7 +63,7 @@ Aunque el requerimiento inicial menciona un sistema gestor relacional como MySQL
 
 La plataforma Firebase proporciona un conjunto robusto de herramientas de seguridad que cumplen y superan los requisitos solicitados.
 
--   **Autenticación por Roles:** El sistema ya implementa esto. En la colección `employees`, cada documento tiene un campo `role` ("waiter", "cashier"). La lógica de la aplicación en `LoginForm.tsx` redirige al usuario a la interfaz correcta según su rol después de verificar su PIN. También existe un rol de "Administrador" con acceso a un panel de control separado y seguro.
+-   **Autenticación por Roles:** El sistema ya implementa esto. En la colección `employees`, cada documento tiene un campo `role` ("waiter", "cashier", "kitchen"). La lógica de la aplicación en `LoginForm.tsx` redirige al usuario a la interfaz correcta según su rol después de verificar su PIN. También existe un rol de "Administrador" con acceso a un panel de control separado y seguro.
 
 -   **Control de Acceso según Permisos:** Este es uno de los puntos más fuertes de la arquitectura. En lugar de ser gestionado por el código del servidor, el control de acceso se delega a las **Reglas de Seguridad de Firestore**. Estas reglas actúan como un "firewall" a nivel de base de datos. Permiten definir con extrema granularidad quién puede leer, escribir o borrar cada pieza de información. Por ejemplo, podríamos definir reglas para que un camarero solo pueda modificar los pedidos de sus mesas asignadas, pero no las de otros.
 
@@ -79,3 +73,45 @@ La plataforma Firebase proporciona un conjunto robusto de herramientas de seguri
     -   **Control Administrativo:** El administrador del restaurante tiene control total para asignar, actualizar y revocar los PINes de los empleados en cualquier momento desde el panel de administración, garantizando una gestión de accesos centralizada y segura.
 
 -   **Respaldo Automático de la Base de Datos:** Esta es una funcionalidad nativa de Google Cloud Platform, sobre la que se construye Firebase. Se pueden configurar **copias de seguridad automáticas y periódicas** de la base de datos de Firestore directamente desde la consola de Google Cloud, con políticas de retención personalizables. Esto garantiza la recuperación de datos ante cualquier desastre sin necesidad de desarrollar scripts de respaldo manuales.
+
+---
+
+## Gestión de Riesgos Técnicos
+
+La arquitectura moderna de RestoFlow, basada en Vercel y Firebase, mitiga de forma nativa muchos de los riesgos técnicos tradicionales.
+
+-   **Fallos de Conexión:**
+    -   **Riesgo:** Pérdida temporal de internet en el restaurante.
+    -   **Mitigación:** La base de datos (Firestore) tiene un **sólido modo offline**. Los camareros pueden seguir tomando pedidos o modificándolos incluso sin conexión. En cuanto el dispositivo recupera la conectividad, los cambios se sincronizan automáticamente con la nube y se distribuyen a los demás dispositivos (como la caja). Esto garantiza la continuidad operativa.
+
+-   **Pérdida de Datos:**
+    -   **Riesgo:** Falla de un servidor o corrupción de la base de datos.
+    -   **Mitigación:** Este riesgo es prácticamente nulo. Los datos se almacenan en **Firestore**, un servicio de Google Cloud que replica la información geográficamente en múltiples servidores. Además, se pueden configurar **copias de seguridad automáticas** desde la consola de Google Cloud para una capa extra de protección.
+
+-   **Sobrecarga del Sistema en Horas Pico:**
+    -   **Riesgo:** El sistema se vuelve lento o deja de responder durante la hora punta del almuerzo o la cena.
+    -   **Mitigación:** Se utiliza una **arquitectura serverless** (sin servidor). Tanto **Vercel** (para la aplicación) como **Firebase** (para la base de datos) escalan automáticamente sus recursos para manejar cualquier pico de demanda. Esto significa que el sistema mantendrá su rendimiento y rapidez sin importar si hay 1 o 100 camareros usando la aplicación simultáneamente.
+
+---
+
+## Evaluación Técnica del Proyecto
+
+El éxito del sistema se medirá a través de criterios objetivos y observables.
+
+-   **Cumplimiento de Requisitos Funcionales:** Se realizará una validación exhaustiva de cada funcionalidad descrita:
+    -   ¿Puede el administrador crear/editar/eliminar empleados y productos del menú?
+    -   ¿Puede el camarero iniciar sesión, tomar un pedido, añadir notas y enviarlo a cocina?
+    -   ¿Puede el personal de cocina ver los pedidos y marcarlos como listos?
+    -   ¿Puede el camarero ver qué pedidos están listos para servir?
+    -   ¿Puede el cajero ver las mesas ocupadas, procesar pagos y generar un recibo?
+    -   ¿Los reportes de ventas reflejan correctamente las transacciones realizadas?
+
+-   **Pruebas de Rendimiento:** Se evaluará la velocidad y fluidez de la aplicación utilizando herramientas estándar:
+    -   **Velocidad de Carga:** Se medirán los tiempos de carga inicial de las páginas con herramientas como Google PageSpeed Insights.
+    -   **Reactividad de la Interfaz:** Se cronometrará la respuesta de la interfaz a acciones críticas, como añadir un plato al pedido o procesar un pago, asegurando que la experiencia sea instantánea.
+
+-   **Validación de Sincronización en Tiempo Real:** Esta es una prueba clave. Se abrirá la aplicación en dos dispositivos diferentes (ej: tablet de camarero y pantalla de cocina). Se realizará una acción en uno (ej: enviar un pedido a cocina) y se verificará que el cambio se refleje en el segundo dispositivo de forma instantánea, sin necesidad de recargar la página.
+
+-   **Medición de Reducción de Errores Operativos:** Se propondrá un método para medir el impacto real del sistema en el restaurante:
+    -   Se registrará el número de errores comunes (pedidos incorrectos, cuentas mal calculadas) durante un período de prueba.
+    -   Se comparará esta métrica con los datos previos a la implementación (si existen) para demostrar una reducción cuantificable de errores, lo que se traduce en ahorro de costos y mejora en la satisfacción del cliente.
