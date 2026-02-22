@@ -1,3 +1,33 @@
+# Formulario de Pre-Kickoff (Interno)
+
+A continuación se presenta el checklist de validación para la preparación del proyecto RestoFlow.
+
+### Información General
+
+| Campo             | Valor                                                                                                |
+| :---------------- | :--------------------------------------------------------------------------------------------------- |
+| **CLIENTE**       | El Restaurante (Usuario final del sistema)                                                           |
+| **NOMBRE PROYECTO** | RestoFlow                                                                                            |
+| **SPONSOR - PO**  | Dueño del Restaurante / Gerente de Operaciones                                                       |
+| **JEFE PROYECTO** | [Nombre del Jefe de Proyecto]                                                                        |
+| **FECHA**         | [Fecha actual]                                                                                       |
+| **ESTADO PREKICK OFF** | **APROBADO** (Listo para Kickoff)                                                                    |
+
+<br/>
+
+### Checklist de Validación de Preparación
+
+| Pregunta                                                                                         | Respuesta                                                                                                                                                                                                                                              |
+| :----------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **¿En la propuesta, existe algún problema / desafío técnico no abordado?**                         | **NO.** Los desafíos técnicos clave (sincronización en tiempo real, persistencia de datos, arquitectura serverless) se han abordado con la selección de Vercel y Firebase, como se detalla en la documentación técnica.                           |
+| **¿El proyecto cuenta con pendientes en el cierre para su ejecución?**                             | **NO.** El alcance funcional del prototipo está completo. La carga de datos reales (menú, empleados) y la capacitación son parte de la puesta en marcha (Go-Live), no pendientes de desarrollo.                                                    |
+| **¿Existe alguna definición pendiente del producto o servicio?**                                   | **NO.** Todas las funcionalidades, roles y entidades de datos están definidos y documentados en el `DATA_DICTIONARY.md` y `DEVELOPMENT_ANALYSIS.md`.                                                                                          |
+| **¿Existen actividades requeridas no especificadas o faltantes en la propuesta?**                  | **NO.** La propuesta cubre el ciclo completo del prototipo funcional. Mejoras futuras (pasarelas de pago, control de inventario) están fuera del alcance inicial y se consideran como evoluciones del producto.                                   |
+| **¿Existe alguna dependencia del proyecto que ponga en riesgo su capacidad de cumplir con el plazo / alcance?** | **NO.** La dependencia principal es sobre los servicios cloud de Vercel y Firebase, que son plataformas de alta disponibilidad y bajo riesgo. No existen dependencias de terceros que pongan en peligro el alcance actual.                            |
+| **¿Existe algún problema con algún producto, sistema o software que deba ser considerado?**         | **NO.** El stack tecnológico (Next.js, React, Firebase) es moderno, estable y está bien documentado. No se han identificado problemas de compatibilidad o limitaciones que afecten los objetivos del proyecto.                                     |
+
+---
+
 # Propuesta de Ambientes para el Proyecto RestoFlow
 
 Este documento detalla la configuración, propósito y funcionalidades de los ambientes de Prueba (TEST) y Producción para el lanzamiento exitoso de RestoFlow, siguiendo las mejores prácticas de la industria con nuestra arquitectura basada en Vercel y Firebase.
