@@ -120,3 +120,12 @@ Este es el ambiente final, estable y seguro que el personal del restaurante util
 
 *   **Operación y Monitorización:**
     *   Supervisión continua del rendimiento y respaldos automáticos de la base de datos de producción.
+
+---
+
+### Detalle de Entregables e Infraestructura por Ambiente
+
+| Ambientes Involucrados | Detalle de entregables - tecnologías - infraestructura - desarrollo                                                                                                                                                                                                                                                                                                                       |
+| :------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **TEST (QA)**        | **Entregable:** Versión funcional y aislada de RestoFlow para validación interna y del cliente.<br/>**Tecnologías:** Next.js, React, Tailwind CSS, Firebase Firestore.<br/>**Infraestructura:** Despliegue en **Vercel** como "Preview Deployment" con URL temporal. Base de datos en un **proyecto de Firebase separado para pruebas**, con datos ficticios.<br/>**Desarrollo:** Cada nueva funcionalidad o cambio se despliega aquí automáticamente para ser probado antes de pasar a producción. |
+| **Producción**       | **Entregable:** Versión estable y final de RestoFlow para uso diario del restaurante.<br/>**Tecnologías:** Next.js, React, Tailwind CSS, Firebase Firestore.<br/>**Infraestructura:** Despliegue en **Vercel** como "Production Deployment" con la URL final (ej: `app.restoflow.com`). Base de datos en un **proyecto de Firebase dedicado a producción**, con datos reales y respaldos automáticos.<br/>**Desarrollo:** Solo se despliega código que ha sido exhaustivamente probado y aprobado en el ambiente de TEST. |
