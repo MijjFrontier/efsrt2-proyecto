@@ -30,7 +30,9 @@ A continuación se presenta el checklist de validación para la preparación del
 
 # Propuesta de Ambientes para el Proyecto RestoFlow
 
-Este documento detalla la configuración, propósito y funcionalidades de los ambientes de Prueba (TEST) y Producción para el lanzamiento exitoso de RestoFlow, siguiendo las mejores prácticas de la industria con nuestra arquitectura basada en Vercel y Firebase.
+Para el proyecto RestoFlow, y siguiendo las mejores prácticas para una arquitectura moderna con Vercel y Firebase, se definen dos ambientes principales en el ciclo de despliegue: **Pruebas (TEST / QA)** y **Producción**. Esta estructura simplificada y eficiente garantiza que podamos probar nuevas funcionalidades de forma segura sin afectar nunca la operación real del restaurante.
+
+A continuación, se detalla la configuración y el propósito de cada ambiente.
 
 ---
 
