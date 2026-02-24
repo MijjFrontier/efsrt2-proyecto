@@ -26,6 +26,20 @@ A continuación se presenta el checklist de validación para la preparación del
 
 <br/>
 
+### Preguntas Clave para el Sponsor / Product Owner
+
+A continuación, se presentan preguntas estratégicas dirigidas al Sponsor o Product Owner para alinear la visión del proyecto con las necesidades del negocio.
+
+| N° | Pregunta                                                                 | Respuesta (Propuesta)                                                                                                                                                                                            |
+| :- | :----------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1  | **¿Cuál es el valor principal que `RestoFlow` aporta al negocio?**         | El valor principal es la **optimización de la operación** para reducir errores manuales y agilizar el servicio, lo que se traduce directamente en ahorro de costos (menos platos devueltos) y mayor satisfacción del cliente. |
+| 2  | **¿Qué problemas específicos buscamos resolver con esta implementación?** | Buscamos eliminar 3 problemas clave: **1)** Errores en la toma de comandas a mano, **2)** Lentitud en la comunicación entre salón y cocina, y **3)** Dificultad para hacer un cierre de caja rápido y sin descuadres.   |
+| 3  | **¿Cómo se alinea `RestoFlow` con los objetivos actuales del restaurante?** | Se alinea directamente con el objetivo de **mejorar la eficiencia operativa** y **elevar la experiencia del cliente**. Un servicio más rápido y preciso aumenta la rotación de mesas y fomenta la lealtad de los comensales. |
+| 4  | **¿Cuál es el indicador de éxito más importante para este prototipo (KPI)?** | El KPI principal será la **reducción del tiempo promedio desde que se toma el pedido hasta que el plato se marca como listo** en cocina. Secundariamente, la disminución de notas de crédito por errores en los pedidos. |
+| 5  | **Mirando al futuro, ¿qué funcionalidad sería la siguiente gran prioridad?** | La integración con **pasarelas de pago** para procesar tarjetas directamente y un **módulo básico de control de inventario** son las evoluciones más lógicas para seguir optimizando la rentabilidad del restaurante. |
+
+<br/>
+
 ### Checklist de Validación de Preparación
 
 | Pregunta                                                                                         | Respuesta | Justificación                                                                                                                                                                                                                                  |
