@@ -51,102 +51,45 @@ A continuación, se presentan preguntas estratégicas dirigidas al Sponsor o Pro
 | **¿Existe alguna dependencia del proyecto que ponga en riesgo su capacidad de cumplir con el plazo / alcance?** | **Bajo**    | **NO.** La dependencia principal es sobre los servicios cloud de Vercel y Firebase, que son plataformas de alta disponibilidad y bajo riesgo. No existen dependencias de terceros desconocidas o de alto riesgo que pongan en peligro el alcance actual. |
 | **¿Existe algún problema con algún producto, sistema o software que deba ser considerado?**         | **Bajo**    | **NO.** El stack tecnológico (Next.js, React, Firebase) es moderno, estable y está bien documentado. No se han identificado problemas de compatibilidad o limitaciones que afecten los objetivos del proyecto.                                     |
 
----
+<br/>
 
-# Propuesta de Ambientes para el Proyecto RestoFlow
+### Gestión de Riesgos
+
+A continuación se detallan los riesgos identificados para la implementación de RestoFlow.
+
+| N° | Causa | Riesgo | Consecuencia | Calificación | Nivel | Urgencia |
+| :-- | :--- | :--- | :--- | :--- | :--- | :--- |
+| 1 | Dependencia de conexión a internet para sincronización en tiempo real con Firestore. | Interrupción en la comunicación entre salón, cocina y administración. | Retraso en pedidos, descoordinación operativa y posible pérdida de ventas. | 4.2 | 🔴 | Alta |
+| 2 | Resistencia al cambio tecnológico por parte del personal del restaurante. | Adopción lenta o incorrecta de la herramienta RestoFlow. | Baja eficiencia inicial, frustración del personal y errores en la toma de pedidos. | 3.5 | 🟡 | Media |
+| 3 | Falla de hardware (tablets, móviles) en el punto de venta o cocina. | Incapacidad de acceder al sistema para registrar o visualizar pedidos. | Paralización del servicio en mesas específicas o retrasos críticos en la producción. | 3.8 | 🟡 | Media |
+| 4 | Gestión inadecuada de la seguridad de los PIN de acceso de los empleados. | Acceso no autorizado a funciones críticas (ej. caja o administración). | Fuga de información sensible o manipulación indebida de registros de ventas. | 4.5 | 🔴 | Alta |
+| 5 | Cambios inesperados en los costos o políticas de los servicios cloud (Firebase/Vercel). | Aumento en el presupuesto operativo o necesidad de migración técnica. | Impacto en la rentabilidad del proyecto o interrupción del servicio por falta de pago. | 2.5 | 🟢 | Baja |
+
+<br/>
+
+### Propuesta de Ambientes para el Proyecto RestoFlow
 
 Para el proyecto RestoFlow, y siguiendo las mejores prácticas para una arquitectura moderna con Vercel y Firebase, se definen dos ambientes principales en el ciclo de despliegue: **Pruebas (TEST / QA)** y **Producción**. Esta estructura simplificada y eficiente garantiza que podamos probar nuevas funcionalidades de forma segura sin afectar nunca la operación real del restaurante.
-
-A continuación, se detalla la configuración y el propósito de cada ambiente.
 
 ---
 
 ## Ambiente de Pruebas (TEST)
 
-El objetivo de este ambiente es ser una réplica exacta del sistema de producción, donde se validará exhaustivamente cada nueva funcionalidad o corrección antes de que sea utilizada en la operación real del restaurante. Esto garantiza la máxima estabilidad y minimiza cualquier riesgo.
+El objetivo de este ambiente es ser una réplica exacta del sistema de producción, donde se validará exhaustivamente cada nueva funcionalidad o corrección antes de que sea utilizada en la operación real del restaurante.
 
-*   **Plataforma y Despliegue:**
-    *   **Despliegues de "Preview" en Vercel:** Por cada cambio propuesto en el código, Vercel crea automáticamente una URL de previsualización única (ej: `restoflow-abc123.vercel.app`). Este entorno aislado nos permite probar los cambios sin afectar a otros desarrolladores ni al sistema en producción.
-
-*   **Base de Datos:**
-    *   **Proyecto de Firebase para Pruebas:** Se utilizará un proyecto de Firebase completamente separado (ej: `restoflow-test-db`). Esta base de datos contendrá datos ficticios (mesas, menú, empleados, transacciones de prueba), permitiéndonos simular la operación del restaurante sin generar "basura" en los datos reales.
-
-*   **Funcionalidades a Validar en TEST:**
-    Este ambiente debe soportar y permitir la validación de todas las funcionalidades del sistema, entre las cuales se incluyen:
-    *   **Autenticación y Roles:**
-        *   Inicio de sesión seguro por PIN para los roles: Administrador, Camarero, Cajero y Cocina.
-        *   Redirección automática a la interfaz correcta según el rol.
-        *   Funcionalidad para que los empleados puedan cambiar su propio PIN.
-    *   **Módulo de Administrador:**
-        *   **Gestión de Empleados:** Creación, edición y eliminación de personal.
-        *   **Gestión de Menú:** Creación, edición y eliminación de productos y categorías.
-        *   **Gestión de Mesas:** Creación y eliminación de mesas.
-        *   **Visualización de Reportes:** Acceso a reportes de ventas, rendimiento y análisis de datos.
-        *   **Cierre de Caja Centralizado:** Capacidad de ver el reporte del turno y realizar el cierre.
-    *   **Módulo de Camarero:**
-        *   Visualización del plano de mesas con sus estados en tiempo real (Libre, Ocupada, Listo para Servir).
-        *   Toma de pedidos, incluyendo la adición de notas especiales por producto.
-        *   Envío de comandas a la cocina.
-        *   Notificación visual cuando un pedido está listo para ser recogido.
-    *   **Módulo de Cocina:**
-        *   Recepción de comandas en una pantalla, ordenadas cronológicamente.
-        *   Visualización del detalle de cada pedido.
-        *   Opción para marcar pedidos como "Listos", notificando al camarero.
-    *   **Módulo de Cajero:**
-        *   Visualización de mesas pendientes de pago.
-        *   Procesamiento de pagos, incluyendo división de cuentas y múltiples métodos de pago (Efectivo, Tarjeta, Yape, Plin).
-        *   Generación de recibos.
-        *   Cierre del turno de caja y exportación de reporte.
+*   **Plataforma y Despliegue:** Despliegues de "Preview" en Vercel. URL única por cambio.
+*   **Base de Datos:** Proyecto de Firebase para Pruebas independiente con datos ficticios.
+*   **Funcionalidades a Validar:** Todas las descritas en el alcance (Admin, Camarero, Cocina, Cajero).
 
 ---
 
 ## Ambiente de Producción (PRODUCCIÓN)
 
-Este es el ambiente final, estable y seguro que el personal del restaurante utilizará en su operación diaria. Solo se despliega código que ha sido previamente validado y aprobado en el ambiente de TEST.
+Este es el ambiente final, estable y seguro que el personal del restaurante utilizará en su operación diaria.
 
-*   **Plataforma y Despliegue:**
-    *   **Despliegue Principal en Vercel:** Es la URL principal y definitiva de la aplicación (ej: `app.restoflow.com`). Este entorno se actualiza de forma controlada solo cuando los cambios son estables y han sido aprobados.
-
-*   **Base de Datos:**
-    *   **Proyecto de Firebase para Producción:** Se conectará a un segundo proyecto de Firebase (`restoflow-produccion`), dedicado exclusivamente a la operación real. Esta base de datos contendrá la información crítica del negocio y estará completamente aislada de los datos de prueba.
-
-*   **Funcionalidades Operativas en PRODUCCIÓN:**
-    El ambiente de producción ejecuta la versión estable y validada de todas las funcionalidades del sistema, garantizando la continuidad del negocio. Las funcionalidades son idénticas a las probadas en TEST:
-    *   **Autenticación y Roles:**
-        *   Inicio de sesión seguro por PIN para los roles: Administrador, Camarero, Cajero y Cocina.
-        *   Redirección automática a la interfaz correcta según el rol.
-        *   Funcionalidad para que los empleados puedan cambiar su propio PIN.
-    *   **Módulo de Administrador:**
-        *   **Gestión de Empleados:** Creación, edición y eliminación de personal.
-        *   **Gestión de Menú:** Creación, edición y eliminación de productos y categorías.
-        *   **Gestión de Mesas:** Creación y eliminación de mesas.
-        *   **Visualización de Reportes:** Acceso a reportes de ventas, rendimiento y análisis de datos.
-        *   **Cierre de Caja Centralizado:** Capacidad de ver el reporte del turno y realizar el cierre.
-    *   **Módulo de Camarero:**
-        *   Visualización del plano de mesas con sus estados en tiempo real (Libre, Ocupada, Listo para Servir).
-        *   Toma de pedidos, incluyendo la adición de notas especiales por producto.
-        *   Envío de comandas a la cocina.
-        *   Notificación visual cuando un pedido está listo para ser recogido.
-    *   **Módulo de Cocina:**
-        *   Recepción de comandas en una pantalla, ordenadas cronológicamente.
-        *   Visualización del detalle de cada pedido.
-        *   Opción para marcar pedidos como "Listos", notificando al camarero.
-    *   **Módulo de Cajero:**
-        *   Visualización de mesas pendientes de pago.
-        *   Procesamiento de pagos, incluyendo división de cuentas y múltiples métodos de pago (Efectivo, Tarjeta, Yape, Plin).
-        *   Generación de recibos.
-        *   Cierre del turno de caja y exportación de reporte.
-
-*   **Puesta en Marcha (Go-Live):**
-    *   **Configuración Inicial (Setup):**
-        1.  Carga masiva del menú real del restaurante.
-        2.  Creación de todas las cuentas de empleados reales con sus roles y PINs.
-        3.  Configuración de las mesas del restaurante.
-    *   **Capacitación (Training):** Se realizará con el personal utilizando el sistema en producción.
-    *   **Lanzamiento:** Inicio de la operación del restaurante con RestoFlow.
-
-*   **Operación y Monitorización:**
-    *   Supervisión continua del rendimiento y respaldos automáticos de la base de datos de producción.
+*   **Plataforma y Despliegue:** URL principal definitiva en Vercel.
+*   **Base de Datos:** Proyecto de Firebase para Producción con datos críticos y reales.
+*   **Funcionalidades Operativas:** Todas las funcionalidades validadas y estables.
 
 ---
 
@@ -154,10 +97,10 @@ Este es el ambiente final, estable y seguro que el personal del restaurante util
 
 | Ambientes Involucrados | Detalle de entregables - tecnologías - infraestructura - desarrollo                                                                                                                                                                                                                                                                                                                       |
 | :------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **TEST (QA)**        | **Entregable:** Versión funcional y aislada de RestoFlow para validación interna y del cliente.<br/>**Tecnologías:** Next.js, React, Tailwind CSS, Firebase Firestore.<br/>**Infraestructura:** Despliegue en **Vercel** como "Preview Deployment" con URL temporal. Base de datos en un **proyecto de Firebase separado para pruebas**, con datos ficticios.<br/>**Desarrollo:** Cada nueva funcionalidad o cambio se despliega aquí automáticamente para ser probado antes de pasar a producción. |
-| **Producción**       | **Entregable:** Versión estable y final de RestoFlow para uso diario del restaurante.<br/>**Tecnologías:** Next.js, React, Tailwind CSS, Firebase Firestore.<br/>**Infraestructura:** Despliegue en **Vercel** como "Production Deployment" con la URL final (ej: `app.restoflow.com`). Base de datos en un **proyecto de Firebase dedicado a producción**, con datos reales y respaldos automáticos.<br/>**Desarrollo:** Solo se despliega código que ha sido exhaustivamente probado y aprobado en el ambiente de TEST. |
+| **TEST (QA)**        | **Entregable:** Versión funcional y aislada de RestoFlow para validación interna y del cliente.<br/>**Tecnologías:** Next.js, React, Tailwind CSS, Firebase Firestore.<br/>**Infraestructura:** Despliegue en **Vercel** como "Preview Deployment". Base de datos en un **proyecto de Firebase separado para pruebas**.<br/>**Desarrollo:** Validación continua antes de pasar a producción. |
+| **Producción**       | **Entregable:** Versión estable y final de RestoFlow para uso diario del restaurante.<br/>**Tecnologías:** Next.js, React, Tailwind CSS, Firebase Firestore.<br/>**Infraestructura:** Despliegue en **Vercel** como "Production Deployment". Base de datos en un **proyecto de Firebase dedicado a producción**.<br/>**Desarrollo:** Código validado en TEST. |
 
----
+<br/>
 
 ### Hitos y Entregables del Proyecto
 
